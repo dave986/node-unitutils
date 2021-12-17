@@ -6,7 +6,7 @@ const readline = require('readline');
 const parse = (what, where, delimiter) => {
     for (row of where.split(/\n/)) {
         if (row.search(what) !== -1) {
-            return row.replace(what, '').trim().split(delimiter || ' ')
+            return row.replace(what, '').trim().split(delimiter || ' ').filter(v=>v)
         }
     }
 };
