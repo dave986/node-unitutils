@@ -112,6 +112,14 @@ class Shortcuts {
     add(mod, key, clb) {
         this.shortcuts.push([mod, key, clb])
     }
+    /**
+     * Deletes the specified shortcut
+     * @param {*} mod ctrl or shift (these are on all keyboards)
+     * @param {*} key A standard keyboard key, aka a b c d ...
+     */
+    del(mod, key) {
+        this.shortcuts = this.shortcuts.filter(arr => !(arr[0] === mod && arr[1] === key));
+    }
 }
 
 module.exports = {
