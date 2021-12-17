@@ -2,6 +2,7 @@ const readline = require('readline');
 
 // TODO: Implement system call
 
+
 const parse = (what, where, delimiter) => {
     for (row of where.split(/\n/)) {
         if (row.indexOf(what) !== -1) {
