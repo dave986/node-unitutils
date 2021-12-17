@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/dave986/unit-utils/issues"
   },
-  "homepage": "https://github.com/dave986/unit-utils#readme"
+  "homepage": "https://github.com/dave986/unit-utils#readme",
+  "dependencies": {
+    "keypress": "^0.2.1"
+  }
 }

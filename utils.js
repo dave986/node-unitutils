@@ -6,7 +6,7 @@ const readline = require('readline');
 const parse = (what, where, delimiter) => {
     for (row of where.split(/\n/)) {
         if (row.search(what) !== -1) {
-            return row.replace(what, '').trim().split(delimiter || ' ').filter(v=>v)
+            return row.replace(what, '').trim().split(delimiter || ' ').filter(v => v);
         }
     }
 };
@@ -72,6 +72,48 @@ const concatRegExp = (r1, r2) => new RegExp(
     (r1.multiline ? 'm' : '')
 );
 
+class Shortcuts {
+    /**
+     * Adds option to add custom keyboard shortcuts to the console app
+     * @example:
+     * const {Shortcuts} = require('./utils');
+
+     * ( async() => {
+     *     const shortcuts = new Shortcuts();
+     *     shortcuts.add('ctrl', 'a', () => console.log(111))
+     * })();
+     */
+    constructor() {
+        this.shortcuts = [];
+        this.keypress = require('keypress');
+
+        this.keypress(process.stdin);
+        process.stdin.on('keypress', (ch, key) => {
+            console.log('got "keypress"', key);
+            if (key && key.ctrl && key.name == 'c') {
+                process.exit();
+            }
+            this.shortcuts.forEach(shortcut => {
+                if (key && key[shortcut[0]] && key.name == shortcut[1]) {
+                    shortcut[2]();
+                }
+            });
+
+        });
+
+        process.stdin.setRawMode(true);
+        process.stdin.resume();
+    }
+    /** Add a new shortcut and the function which should be executed.
+     * @param {*} mod ctrl or shift (these are on all keyboards)
+     * @param {*} key A standard keyboard key, aka a b c d ...
+     * @param {function} clb Callback with all the shortcuts that should be considered. Note this will overwrite all default shortcuts, except for mandatory default Ctrl+C
+     */
+    add(mod, key, clb) {
+        this.shortcuts.push([mod, key, clb])
+    }
+}
+
 module.exports = {
     parse,
     wait,
@@ -79,5 +121,6 @@ module.exports = {
     ok,
     ko,
     countdown,
-    concatRegExp
+    concatRegExp,
+    Shortcuts
 };
