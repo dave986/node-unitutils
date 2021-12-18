@@ -81,6 +81,8 @@ const colorCodes = {
     BgWhite: '\x1b[47m',
 };
 
+const stripColors = (msg) => msg.replaceAll(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+
 const ok = (msg, suffix = '\r\n') => process.stdout.write(colorCodes.Bright + colorCodes.FgGreen + msg + colorCodes.Reset + suffix);
 const ko = (msg, suffix = '\r\n') => process.stdout.write(colorCodes.Bright + colorCodes.FgRed + msg + colorCodes.Reset + suffix);
 
@@ -166,6 +168,7 @@ module.exports = {
     parse,
     wait,
     colorCodes,
+    stripColors,
     ok,
     ko,
     countdown,

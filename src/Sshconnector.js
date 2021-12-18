@@ -1,5 +1,5 @@
 const { NodeSSH } = require('node-ssh');
-const { wait, colorCodes, concatRegExp } = require('./utils');
+const { wait, colorCodes, concatRegExp, stripColors } = require('./utils');
 
 
 class Sshconnector {
@@ -14,7 +14,7 @@ class Sshconnector {
      * @param {String} options.id This unit identifier, if different than the hostname. It will be used as default for the socket communication. DEFAULT is hostname
      * @param {Bool} options.blindMask When true, the output of all commands will be suppressed. For suppressing only a particular command output, use Unit.cmd(options.suppressOutput) option instead. DEFAULT is false
      * @param {Bool} options.color When true, the sent command string will be colorized in the *terminal output*. DEFAULT is true
-     * @param {Bool} options.suppressShellColors When true, all the command outputs will be strip of ASCI color escape sequences. DEFAULT is true
+     * @param {Bool} options.suppressShellColors When true, all the command stdout outputs will be strip of ASCI color escape sequences. Note the return and emit strig will be always de-colorized. DEFAULT is false
      * @param {String} options.promptRegExpStr The target host prompt line regexp string. DEFAULT is /[a-zA-Z0-9_!@#%()-+=:,.?\/].*[\||]{1}[#|>]{1}/g, aka: some_string_EE|>
      * @example
      * const App = async () => {
@@ -35,7 +35,7 @@ class Sshconnector {
         this.id = options.id || options.host;
         this.blindMask = options.blindMask || false;
         this.color = ('color' in options) ? options.color : true;
-        this.suppressShellColors = ('suppressShellColors' in options) ? options.suppressShellColors : true;
+        this.suppressShellColors = ('suppressShellColors' in options) ? options.suppressShellColors : false;
         this.promptRegExpStr = new RegExp(options.promptRegExpStr || /[a-zA-Z0-9_!@#%()-+=:,.?\/].*[\||]{1}[#|>]{1}/g);
 
         this.ssh = new NodeSSH();
@@ -90,18 +90,18 @@ class Sshconnector {
         const socket = options.emit && options.emit.socket || this.socket;
         const socketEvent = options.emit && options.emit.event || 'sshcmd';
 
+        const processOutputs = (msg) => {
 
-        const { blindMask, id, suppressShellColors, color } = this;
+            let opt = this.suppressShellColors ? stripColors(msg) : msg;
 
-        function output (msg) {
-
-            let opt = suppressShellColors ? msg.replaceAll(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '') : msg;
+            result += opt;
 
             if (socket) {
-                socket.emit(socketEvent, { unit: id, cmd: cmd, opt: opt });
+                socket.emit(socketEvent, { unit: this.id, cmd: cmd, opt: stripColors(opt) });
             }
-            if (!suppressOutput && !blindMask) {
-                if (color) {
+
+            if (!suppressOutput && !this.blindMask) {
+                if (this.color) {
                     opt = opt.replace(`${cmd}\r`, colorCodes.Bright + colorCodes.FgYellow + cmd + colorCodes.Reset + '\r');
                 }
                 process.stdout.write(opt);
@@ -156,23 +156,22 @@ class Sshconnector {
 
                 if (endIndex === -1) {
                     const newIndex = this.buffer.length - 1;
-                    output(this.buffer.slice(currIndex, newIndex));
+                    processOutputs(this.buffer.slice(currIndex, newIndex));
                     currIndex = newIndex;
                 } else { // we have all we need
-                    endIndex += expect === 'prompt' ? 0 : expect.length;
-                    result = this.buffer.slice(firstLineStartInd, endIndex);
-
                     const newLine = expect === 'prompt' ? '' : '\r\n';
-                    output(this.buffer.slice(currIndex, endIndex) + newLine);
+                    endIndex += expect === 'prompt' ? 0 : expect.length;
+                    processOutputs(this.buffer.slice(currIndex, endIndex) + newLine);
 
-                    this.buffer = '';
-                    return result;  // FIXME: Result is not suppressing colors
+                    return stripColors(result);
                 }
             }
 
             time += 10;
         }
     }
+
+    
 }
 
 module.exports = Sshconnector;
