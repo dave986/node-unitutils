@@ -95,7 +95,7 @@ class Sshconnector {
 
         function output (msg) {
 
-            let opt = suppressShellColors ? msg.replaceAll(/\[\d{1,2}m/g, '') : msg;
+            let opt = suppressShellColors ? msg.replaceAll(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '') : msg;
 
             if (socket) {
                 socket.emit(socketEvent, { unit: id, cmd: cmd, opt: opt });
@@ -166,7 +166,7 @@ class Sshconnector {
                     output(this.buffer.slice(currIndex, endIndex) + newLine);
 
                     this.buffer = '';
-                    return result;
+                    return result;  // FIXME: Result is not suppressing colors
                 }
             }
 
