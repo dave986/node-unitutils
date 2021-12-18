@@ -1,7 +1,43 @@
 const readline = require('readline');
+const spawnCommand = require('spawn-command');
 
-// TODO: Implement system call
+// TODO: Add mocha to the workflow
 
+/**
+ * A system call.
+ * @param {String} command Command to be executed
+ * @returns The command result, both stdin and stderr
+ */
+const system = async (command) => {
+    // TODO: Implement socket pipe
+    const child = spawnCommand(command)
+
+    let result = '';
+    let isDone = false;
+
+    child.stdout.on('data', (chunk) => {
+        result += chunk;
+        process.stdout.write(chunk);
+    });
+    child.stderr.on('data', (chunk) => {
+        result += chunk;
+        process.stdout.write(chunk);
+    });
+
+    // since these are streams, you can pipe them elsewhere
+    // child.stderr.pipe(dest);
+
+    child.on('close', (code) => {
+        // console.log(`child process exited with code ${code}`);
+        isDone = true;
+    });
+
+    while (!isDone) {
+        await wait(10);
+    }
+
+    return result;
+};
 
 const parse = (what, where, delimiter) => {
     for (row of where.split(/\n/)) {
@@ -75,7 +111,8 @@ const concatRegExp = (r1, r2) => new RegExp(
 class Shortcuts {
     /**
      * Adds option to add custom keyboard shortcuts to the console app
-     * @example:
+     * @argument {Bool} debug Prints the encountered shortcut. DEFAULT is false
+     * @example
      * const {Shortcuts} = require('./utils');
 
      * ( async() => {
@@ -83,13 +120,13 @@ class Shortcuts {
      *     shortcuts.add('ctrl', 'a', () => console.log(111))
      * })();
      */
-    constructor() {
+    constructor(debug = false) {
         this.shortcuts = [];
         this.keypress = require('keypress');
 
         this.keypress(process.stdin);
         process.stdin.on('keypress', (ch, key) => {
-            console.log('got "keypress"', key);
+            debug && console.log('got "keypress"', key);
             if (key && key.ctrl && key.name == 'c') {
                 process.exit();
             }
@@ -101,7 +138,9 @@ class Shortcuts {
 
         });
 
-        process.stdin.setRawMode(true);
+        if (process.stdin.isTTY) { // without this there will be crash on no-tty terminals (datemons, debugger,..)
+            process.stdin.setRawMode(true);
+        }
         process.stdin.resume();
     }
     /** Add a new shortcut and the function which should be executed.
@@ -123,6 +162,7 @@ class Shortcuts {
 }
 
 module.exports = {
+    system,
     parse,
     wait,
     colorCodes,
