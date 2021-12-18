@@ -1,6 +1,6 @@
 {
   "name": "node-unitutils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A collection of tools for controlling and testing ssh devices",
   "main": "node-unitutils.js",
   "scripts": {
