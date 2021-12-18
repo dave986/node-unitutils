@@ -53,6 +53,7 @@ const wait = (delay) => {
     })
 };
 
+// TODO: reimplement with chalk
 const colorCodes = {
     Reset: '\x1b[0m',
     Bright: '\x1b[1m',
