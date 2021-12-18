@@ -1,21 +1,21 @@
 {
-  "name": "unitutils",
+  "name": "node-unitutils",
   "version": "1.0.0",
   "description": "A collection of tools for controlling and testing ssh devices",
-  "main": "unitutils.js",
+  "main": "node-unitutils.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://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:x-oauth-basic@github.com/dave986/unit-utils.git"
+    "url": "git+https://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:x-oauth-basic@github.com/dave986/node-unitutils.git"
   },
   "author": "David Korinek",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/dave986/unitutils/issues"
+    "url": "https://github.com/dave986/node-unitutils/issues"
   },
-  "homepage": "https://github.com/dave986/unitutils#readme",
+  "homepage": "https://github.com/dave986/node-unitutils#readme",
   "dependencies": {
     "node-ssh": "^12.0.2",
     "socket.io": "^4.4.0",
