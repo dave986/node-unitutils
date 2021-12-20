@@ -93,10 +93,9 @@ const ko = (msg, suffix = '\r\n') => process.stdout.write(colorCodes.Bright + co
  * @param {String} msg Optional message for the countdown
  */
 const countdown = async (sec, msg = '') => {
-    let rem = sec;
     let str = msg ? msg + '  ' : '';
-    while (rem > 0) {
-        process.stdout.write(`${str}${rem--}`);
+    while (sec > 0) {
+        process.stdout.write(`${str}${sec--}`);
         await wait(1000);
         readline.clearLine(process.stdout);
         readline.cursorTo(process.stdout, 0)
