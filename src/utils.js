@@ -41,7 +41,7 @@ const system = async (command) => {
 
 const parse = (what, where, delimiter) => {
     for (row of where.split(/\n/)) {
-        if (row.search(what) !== -1) {
+        if ((what instanceof RegExp && row.search(what) !== -1) || (typeof what === 'string' && row.indexOf(what) !== -1)) {
             return row.replace(what, '').trim().split(delimiter || ' ').filter(v => v);
         }
     }
