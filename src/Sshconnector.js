@@ -25,7 +25,7 @@ class Sshconnector {
        App();
      */
     constructor(host, options = {}) {
-
+        // FIXME: Sanitize buffer readings off non-printable characters (eg ssh to linux box fails on prompt colors/shit)
         this.host = host;
 
         this.username = options.username || 'admin';
@@ -84,6 +84,9 @@ class Sshconnector {
     async cmd (cmd, options = {}) {
 
         // Options
+        const defaultOptions = {
+            // Object.assign
+        }
         const expect = ('expect' in options) ? options.expect : 'prompt';
         const timeout = options.timeout || 10;
         const suppressOutput = options.suppressOutput || false;
@@ -171,7 +174,7 @@ class Sshconnector {
         }
     }
 
-    
+
 }
 
 module.exports = Sshconnector;
