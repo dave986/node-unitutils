@@ -36,7 +36,7 @@ class Sshconnector {
         this.blindMask = options.blindMask || false;
         this.color = ('color' in options) ? options.color : true;
         this.suppressShellColors = ('suppressShellColors' in options) ? options.suppressShellColors : false;
-        this.promptRegExpStr = new RegExp(options.promptRegExpStr || /[a-zA-Z0-9_!@#%()-+=:,.?\/].*[\||]{1}[>|#]{1}/g);
+        this.promptRegExpStr = new RegExp(options.promptRegExpStr || /[a-zA-Z0-9_!@#%()\-+=:,.?\/].*[\\||]{1}[>|#]{1}/g);
 
         this.ssh = new NodeSSH();
         this.buffer = '';
