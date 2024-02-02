@@ -44,7 +44,7 @@ const parse = (what, where, delimiter) => {
         const regExpMatch = what instanceof RegExp && row.search(what) !== -1;
         const stringMatch = typeof what === 'string' && row.indexOf(what) !== -1;
         if (regExpMatch || stringMatch) {
-            return row.replace(what, '').trim().split(delimiter || ' ').filter(v => v);
+            return row.replace(what, '').split(delimiter || ' ').map(v => v.trim()).filter(v => v);
         }
     }
 };
