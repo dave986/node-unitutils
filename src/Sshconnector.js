@@ -59,6 +59,8 @@ class Sshconnector {
         while (true) {
             await wait(25);
             if (this.buffer.search(this.promptRegExpStr) !== -1) { // wait for first prompt  FIXME: It is kinda hard to guess a colorful prompt. It should probably be stripped. 
+                // BUG: Without this delay, the first command after a reconnection (like reset) is not executed. Not sure why. Investigate. 
+                await wait(250);
                 break;
             }
         }
