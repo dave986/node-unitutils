@@ -1,8 +1,12 @@
 const Sshconnector = require("./Sshconnector");
 
 class Unit extends Sshconnector {
-    async en () {
-        await this.cmd('kill enable', { expect: 'ok', suppressOutput: false, timeout: 2 });
+    async en (options = {}) {
+        const defaultOptions = {
+            suppressOutput: false,
+            timeout: 5  // can be after restart, give it a second
+        }
+        await this.cmd('kill enable', Object.assign(defaultOptions, options));
     }
 }
 
