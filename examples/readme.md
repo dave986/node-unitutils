@@ -1,0 +1,1 @@
+Each folder in this directory is a standalone application. You can install each one separately by navigating to the folder and running `npm install` 

@@ -1,0 +1,15 @@
+{
+  "name": "cxf_ftp_updater",
+  "version": "1.0.0",
+  "description": "Updates the provided unit with provided ftp path",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Korinek, ATH System s.r.o.",
+  "license": "ISC",
+  "dependencies": {
+    "ftp-srv": "^4.6.3",
+    "node-unitutils": "github:dave986/node-unitutils"
+  }
+}
