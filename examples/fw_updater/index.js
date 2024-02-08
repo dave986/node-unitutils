@@ -61,7 +61,7 @@ const checkverFixPath = 'usb://FW/fixwiz.afw';
             let output = await unit.cmd(`update fw ${checkverFtpPath}`, options);
             
             //If error encountered, exit the process (probably no such file on the FTP server)
-            checkError(output);
+            await checkError(output);
             
             //Parse the packages to upgrade
             let toUpgrade = output
@@ -79,20 +79,20 @@ const checkverFixPath = 'usb://FW/fixwiz.afw';
             // a) oskernel
             if (toUpgrade.includes('oskernel')) {
                 output = await unit.cmd(`update fw ${checkverFtpPath.replace('checkversions', 'oskernel')}`, options);
-                checkError(output);
+                await checkError(output);
             }
             
             // b) hwbaseXYZ
             const hwbasePackages = toUpgrade.filter((pkg) => pkg.match(/hwbase\d\d\d/));  
             for (const pkg of hwbasePackages) {
                 output = await unit.cmd(`update fw ${checkverFtpPath.replace('checkversions', pkg)}`, options);
-                checkError(output);
+                await checkError(output);
             }
             
             // c) hwbaseemm
             if (toUpgrade.includes('hwbaseemm')) {
                 output = await unit.cmd(`update fw ${checkverFtpPath.replace('checkversions', 'hwbaseemm')}`, options);
-                checkError(output);
+                await checkError(output);
             }
             
             // d) hwbaseemmXYZ
@@ -105,13 +105,13 @@ const checkverFixPath = 'usb://FW/fixwiz.afw';
             
             for (const emm of emmToUpgrade) {
                 output = await unit.cmd(`set emm${emm} updfpgafw`, { timeout: 180 });
-                checkError(output);
+                await checkError(output);
             }
             
             // e) fwbase
             if (toUpgrade.includes('fwbase')) {                                    
                 output = await unit.cmd(`update fw ${checkverFtpPath.replace('checkversions', 'fwbase')}`, { expect: 'done', timeout: 180 }); 
-                checkError(output);
+                await checkError(output);
             }
             
             
@@ -145,7 +145,7 @@ const checkverFixPath = 'usb://FW/fixwiz.afw';
                 ok('Fixing the wizard...');
                 await unit.en({ suppressOutput: true });  // beter hide the output to not confuse the user
                 output = await unit.cmd(`update fw ${checkverFixPath}`, { timeout: 60, suppressOutput: true});
-                checkError(output);
+                await checkError(output);
             }
             
             // Log success and the upgraded version, then continue with the next unit
