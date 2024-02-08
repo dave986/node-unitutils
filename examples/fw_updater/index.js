@@ -134,7 +134,7 @@ const checkverFixPath = 'usb://FW/fixwiz.afw';
             const alarmsOk = parse('sw alarms :', await unit.cmd(`sh ala details`))[0].indexOf('UpdFw') === -1;
             if (!alarmsOk) {
                 ko('FW consistency check failed. Please check it manually!');
-                process.exit(1);
+                await exitHandler();
             }
 
             const upgradedVersion = parse('fw rev   :', await unit.cmd(`sh inf`))[0];
@@ -155,6 +155,7 @@ const checkverFixPath = 'usb://FW/fixwiz.afw';
     }
     catch (e) {
         console.log(e);
+        await exitHandler();        
     }
 
 })();
@@ -164,10 +165,10 @@ const checkverFixPath = 'usb://FW/fixwiz.afw';
  * @param {String} str The string to check for the error
  * @returns Boolean value, true if the string does not contain the word 'error'
  */
-function checkError(str) {
+async function checkError(str) {
     if (str.toLowerCase().indexOf('error') !== -1) {
         ko('An unexpected error occured. Please check it manually!');
-        process.exit(1);
+        await exitHandler();
     }
 }
 
@@ -183,3 +184,14 @@ async function resetEmmMux(unit) {
         await unit.cmd(`set ${emmMux} mux emm1`, { suppressOutput: true});
     }
 }
+
+/**
+ * Exit handler
+ * Forces prompt to wait for the user to press Enter before closing the window to prevent the window from closing when running the script as a standalone executable.
+ * @returns {Promise<void>}
+ */
+async function exitHandler() {
+    await prompt('Press Enter to close');
+    process.exit(1);
+}
+
