@@ -12,7 +12,61 @@ npm install github:dave986/node-unitutils
 
 ## Examples
 
-Check the [examples](./examples/readme.md) folder for some example code.
+This is how a basic application using the library might look:
+
+```javascript
+const { Unit, parse, ok, ko, countdown } = require('node-unitutils');
+const fs = require('fs');
+
+/**
+ * Main function
+ * Read the status of the unit every 10 seconds and write the results to a log file
+ */
+async function main() {
+    const log = './results.csv'; 
+    const idu = new Unit('192.168.3.168');
+    idu.blindMask = true;  // Supress the output of the commands
+
+    let loop = 1;
+    while (true) {
+        ok(`Loop ${loop++}`);
+        try {
+            const iduUptime = parse('Uptime      :', await idu.cmd('sh status'));  // returns an array: ['7d', '02:36:16']
+            const d_sec = Number(iduUptime[0].replace('d','')) * 24 * 60 * 60,     // days to seconds
+                t_split = iduUptime[1].split(':'),                                 // split the time string into an array ['02', '36', '16']
+                h_sec = Number(t_split[0]) * 60 * 60,                              // hours to seconds
+                m_sec = Number(t_split[1]) * 60,                                   // minutes to seconds
+                s_sec = Number(t_split[2]);                                        // seconds
+            const iduUptimeSec = d_sec + h_sec + m_sec + s_sec;
+            const [mse1] = parse('MSE(SNR)[dB]:', await idu.cmd('sh modem'));      // returns an array with number of elements equal to the number of channels
+            const [rxl1] = parse('RXLevel[dBm]:', await idu.cmd('sh radio'));
+            const logLine = `${iduUptimeSec},${mse1},${rxl1}\n`;
+            console.log(logLine);
+            fs.writeFile(log, logLine, { flag: 'a+' }, err => {});  // write the log line to the file
+        } catch (error) {
+            ko(`An error occurred: ${error}`);
+        }
+        await countdown(10);  // wait for 10 seconds
+    }
+}
+
+console.log('Press Ctrl+C to stop the program');
+main();  // run the main function
+```
+
+Will produce a file with the following content:
+
+```csv
+13244,-41.00,-76.4
+13254,-40.90,-76.4
+13264,-41.00,-76.5
+13274,-40.90,-76.5
+13285,-41.00,-76.3
+13295,-40.90,-76.5
+13305,-40.90,-76.5
+```
+
+Check the [examples](./examples/readme.md) folder for some more example code.
 
 ## Usage
 
